@@ -12,7 +12,6 @@ use Email::Sender::Transport::SMTP;
 use experimental qw(signatures);
 
 sub register($self, $app, $conf = {}) {
-
   my $from = delete($conf->{from});
   my $rr   = delete($conf->{recipient_resolver}) // sub($add) { $add };
   delete($conf->{sasl_username}) unless(defined($conf->{sasl_username}));
@@ -20,7 +19,7 @@ sub register($self, $app, $conf = {}) {
 
   my $transport = Email::Sender::Transport::SMTP->new($conf);
 
-  $app->helper(send_email => sub ($c, %args) {
+  $app->helper(create_email => sub ($c, %args) {
     my $mail = Email::Stuffer->new({
       transport => $transport,           # from config
       from      => $args{from} // $from, # from config, overridable
@@ -68,6 +67,11 @@ sub register($self, $app, $conf = {}) {
         $mail->attach_file($att)
       }
     }
+    return $mail;
+  });
+
+  $app->helper(send_email => sub($c, %args) {
+    $c->create_email(%args)->send();
   });
 
 }
