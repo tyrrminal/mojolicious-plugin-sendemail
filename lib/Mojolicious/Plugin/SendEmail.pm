@@ -41,6 +41,7 @@ sub register($self, $app, $conf = {}) {
     } elsif($args{body}) {
       $body = $args{body};
     }
+    $args{html} = index($body, '<html') != -1 unless(defined($args{html}));
     if($args{html}) {
       $mail->html_body($body)
     } else {
