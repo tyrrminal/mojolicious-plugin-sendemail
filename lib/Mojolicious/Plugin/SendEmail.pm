@@ -27,8 +27,9 @@ sub register($self, $app, $conf = {}) {
       to        => $rr->($args{to}),     # required
       subject   => $args{subject} // '', # optional, default empty string
     });
-    $mail->cc($rr->($args{cc}))   if($args{cc});
-    $mail->bcc($rr->($args{bcc})) if($args{bcc});
+    my $unarray = sub ($x) { ref($x) eq 'ARRAY' ? $x->@* : $x };
+    $mail->cc($unarray->($rr->($args{cc})))   if($args{cc});
+    $mail->bcc($unarray->($rr->($args{bcc}))) if($args{bcc});
   
     my $body = '';
     if($args{template}) { 
