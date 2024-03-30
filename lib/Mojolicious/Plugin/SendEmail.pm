@@ -51,7 +51,21 @@ sub register($self, $app, $conf = {}) {
       $mail->header($header->%*);
     }
 
-    $mail->send();
+    foreach my $att (($args{attachments}//[])->@*) {
+      if(ref($att) eq 'ARRAY') {
+        $mail->attach($att->[0], ($att->[1]//{})->%*)
+      } else {
+        $mail->attach($att)
+      }
+    }
+
+    foreach my $att (($args{files}//[])->@*) {
+      if(ref($att) eq 'ARRAY') {
+        $mail->attach_file($att->[0], ($att->[1]//{})->%*)
+      } else {
+        $mail->attach_file($att)
+      }
+    }
   });
 
 }
