@@ -252,10 +252,16 @@ sending. Must be a L<Email::Sender::Transport>. Returns the transport object.
 
 =cut
 
-  $app->helper(email_transport => sub ($c, $t = undef)) {
-    $transport = $t if(defined($t) && _INSTANCEDOES($t, 'Email::Sender::Transport'));
+  $app->helper(email_transport => sub ($c, $t = undef) {
+    if(defined($t)) {
+      if(_INSTANCEDOES($t, 'Email::Sender::Transport')) {
+        $transport = $t
+      } else {
+        die("email_transport argument must be an Email::Sender::Transport instance");
+      }
+    }
     return $transport;
-  }
+  });
 
 }
 
