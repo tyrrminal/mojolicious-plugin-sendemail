@@ -72,6 +72,7 @@ distribution lists". See L</recipient_resolver> below for details
 use Mojo::Base 'Mojolicious::Plugin';
 
 use Email::Stuffer;
+use Params::Util qw(_INSTANCEDOES);
 use Email::Sender::Transport::SMTP;
 
 use experimental qw(signatures);
@@ -243,6 +244,18 @@ further customization, serialization, delayed sending, etc.
   $app->helper(send_email => sub($c, %args) {
     $c->create_email(%args)->send();
   });
+
+=head2 email_transport( [$transport] )
+
+If C<$transport> is provided, sets the email transport used for all future mail
+sending. Must be a L<Email::Sender::Transport>. Returns the transport object.
+
+=cut
+
+  $app->helper(email_transport => sub ($c, $t = undef)) {
+    $transport = $t if(defined($t) && _INSTANCEDOES($t, 'Email::Sender::Transport'));
+    return $transport;
+  }
 
 }
 
